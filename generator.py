@@ -9,24 +9,27 @@ def loot_table_gen(mobs:dict[str,int]):
     
 def spawning_gen(mobs:dict[str,int]):
     for mob in mobs:
+        tag:str=f',Tags:["init"{',king' if mob=='villager' else ''}]{',Size:0' if mob=='slime' else ''}'
         try:
             with open(f'results/{mob}.mcfunction','x') as file:
                 file.write(f"""function chegg:get_dir
 execute if entity @p[advancements={'{chegg:'+mob+'=true}'},team=blue] run team join blue @e[type={mob},limit=1,sort=nearest]
 execute if entity @p[advancements={'{chegg:'+mob+'=true}'},team=red] run team join red @e[type={mob},limit=1,sort=nearest]
 
-execute if score #math blue_x >= #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+',Tags:["init","king"]}'}
-execute if score #math blue_x <= #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+',Tags:["init","king"]}'}
-execute if score #math blue_x >= #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+',Tags:["init","king"]}'}
-execute if score #math blue_x <= #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+',Tags:["init","king"]}'}
+execute if score #math blue_x > #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+tag+'}'}
+execute if score #math blue_x < #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+tag+'}'}
+execute if score #math blue_x > #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+tag+'}'}
+execute if score #math blue_x < #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+tag+'}'}
 
-execute if score #math blue_z >= #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[180f,0f]'+',Tags:["init","king"]}'}
-execute if score #math blue_z <= #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+',Tags:["init","king"]}'}
-execute if score #math blue_z >= #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+',Tags:["init","king"]}'}
-execute if score #math blue_z <= #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-180f,0f]'+',Tags:["init","king"]}'}
+execute if score #math blue_z > #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[180f,0f]'+tag+'}'}
+execute if score #math blue_z < #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+tag+'}'}
+execute if score #math blue_z > #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+tag+'}'}
+execute if score #math blue_z < #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-180f,0f]'+tag+'}'}
 advancement revoke @p[advancements={'{chegg:'+mob+'=true}'},limit=1] only chegg:{mob}""")
         except FileExistsError:
             pass
+        
+        #Villager: add back
 def advancement_gen(mobs:dict[str,int]):
     for mob in mobs:
         with open(rf'results/{mob}.json','x') as file:
@@ -52,4 +55,4 @@ def advancement_gen(mobs:dict[str,int]):
     }
 },file)
 
-spawning_gen(mobs)
+loot_table_gen(mobs)
