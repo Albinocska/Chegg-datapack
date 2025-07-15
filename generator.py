@@ -9,27 +9,35 @@ def loot_table_gen(mobs:dict[str,int]):
     
 def spawning_gen(mobs:dict[str,int]):
     for mob in mobs:
-        tag:str=f',Tags:["init"{',king' if mob=='villager' else ''}]{',Size:0' if mob=='slime' else ''}'
-        try:
-            with open(f'results/{mob}.mcfunction','x') as file:
-                file.write(f"""function chegg:get_dir
+        template:str=f"""function chegg:get_dir
 execute if entity @p[advancements={'{chegg:'+mob+'=true}'},team=blue] run team join blue @e[type={mob},limit=1,sort=nearest]
 execute if entity @p[advancements={'{chegg:'+mob+'=true}'},team=red] run team join red @e[type={mob},limit=1,sort=nearest]
 
-execute if score #math blue_x > #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+tag+'}'}
-execute if score #math blue_x < #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+tag+'}'}
-execute if score #math blue_x > #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+tag+'}'}
-execute if score #math blue_x < #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+tag+'}'}
+execute if score #math blue_x > #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+'}'}
+execute if score #math blue_x < #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+'}'}
+execute if score #math blue_x > #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-90f,0f]'+'}'}
+execute if score #math blue_x < #math red_x if score #math diff_x > #math diff_z run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[90f,0f]'+'}'}
 
-execute if score #math blue_z > #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[180f,0f]'+tag+'}'}
-execute if score #math blue_z < #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+tag+'}'}
-execute if score #math blue_z > #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+tag+'}'}
-execute if score #math blue_z < #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-180f,0f]'+tag+'}'}
-advancement revoke @p[advancements={'{chegg:'+mob+'=true}'},limit=1] only chegg:{mob}""")
+execute if score #math blue_z > #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[180f,0f]'+'}'}
+execute if score #math blue_z < #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=blue,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+'}'}
+execute if score #math blue_z > #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[0f,0f]'+'}'}
+execute if score #math blue_z < #math red_z if score #math diff_z > #math diff_x run data merge entity @e[limit=1,type={mob},team=red,sort=nearest,tag=!init] {'{Rotation:[-180f,0f]'+'}'}
+
+execute as @e[type=minecraft:{mob},tag=!init] run data modify entity @s CustomName set from entity @s "Type"
+{f'execute as @e[type=minecraft:{mob},tag=!init] run data merge entity @s '+'{NoAI:true,CustomNameVisible:true,ArmorItems:[{'+'},{'+'},{'+'},{Count:1,id:"acacia_button"'+'}],PersistenceRequired:1b,ArmorDropChances:[0,0,0,0],Silent:1b,IsBaby:0b'+'}'}
+{'execute as @e[sort=nearest,type=minecraft:villager,tag=!init,limit=1] run tag @s add king' if mob=='villager' else ''}
+{'execute as @e[sort=nearest,type=minecraft:slime,tag=!init,limit=1] run data modify entity @s Size set value 0' if mob=='slime' else ''}
+execute as @e[sort=nearest,type=minecraft:{mob},tag=!init,limit=1] run tag @s add init
+
+
+advancement revoke @p[advancements={'{chegg:'+mob+'=true}'},limit=1] only chegg:{mob}"""
+        try:
+            with open(f'DATAPACK_CHEGG/data/spawning/functions/{mob}.mcfunction','x') as file:
+                file.write(template)
         except FileExistsError:
-            pass
+            with open(f'DATAPACK_CHEGG/data/spawning/functions/{mob}.mcfunction','w') as file:
+                file.write(template)
         
-        #Villager: add back
 def advancement_gen(mobs:dict[str,int]):
     for mob in mobs:
         with open(rf'results/{mob}.json','x') as file:
@@ -55,4 +63,4 @@ def advancement_gen(mobs:dict[str,int]):
     }
 },file)
 
-loot_table_gen(mobs)
+spawning_gen(mobs)
