@@ -1,4 +1,4 @@
-function chegg:get_dir
+
 execute if entity @p[advancements={chegg:zombie=true},team=blue] run team join blue @e[type=zombie,limit=1,sort=nearest]
 execute if entity @p[advancements={chegg:zombie=true},team=red] run team join red @e[type=zombie,limit=1,sort=nearest]
 

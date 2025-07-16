@@ -1,4 +1,4 @@
-function chegg:get_dir
+
 execute if entity @p[advancements={chegg:pufferfish=true},team=blue] run team join blue @e[type=pufferfish,limit=1,sort=nearest]
 execute if entity @p[advancements={chegg:pufferfish=true},team=red] run team join red @e[type=pufferfish,limit=1,sort=nearest]
 

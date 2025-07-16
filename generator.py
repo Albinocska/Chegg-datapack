@@ -9,7 +9,7 @@ def loot_table_gen(mobs:dict[str,int]):
     
 def spawning_gen(mobs:dict[str,int]):
     for mob in mobs:
-        template:str=f"""function chegg:get_dir
+        template:str=f"""{'function chegg:get_dir' if mob=='villager' else ''}
 execute if entity @p[advancements={'{chegg:'+mob+'=true}'},team=blue] run team join blue @e[type={mob},limit=1,sort=nearest]
 execute if entity @p[advancements={'{chegg:'+mob+'=true}'},team=red] run team join red @e[type={mob},limit=1,sort=nearest]
 

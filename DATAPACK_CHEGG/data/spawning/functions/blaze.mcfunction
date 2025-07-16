@@ -1,4 +1,4 @@
-function chegg:get_dir
+
 execute if entity @p[advancements={chegg:blaze=true},team=blue] run team join blue @e[type=blaze,limit=1,sort=nearest]
 execute if entity @p[advancements={chegg:blaze=true},team=red] run team join red @e[type=blaze,limit=1,sort=nearest]
 
